@@ -33,5 +33,10 @@ class OverlayBridge(private val ctx: Context) {
     }
 
     @JavascriptInterface
+    fun googleSignIn() {
+        (ctx as? MainActivity)?.let { a -> a.runOnUiThread { a.startGoogle() } }
+    }
+
+    @JavascriptInterface
     fun hide() { ctx.stopService(Intent(ctx, OverlayService::class.java)) }
 }

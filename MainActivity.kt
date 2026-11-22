@@ -7,9 +7,39 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.webkit.WebViewAssetLoader
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
+    private val webClientId = "162957967049-dsn3n0pprcmfp84v33qfvbe70889730e.apps.googleusercontent.com"
+
+    // নেটিভ Google লগইন (WebView তে Google পপআপ লগইন কাজ করে না)
+    fun startGoogle() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(webClientId).requestEmail().build()
+        val client = GoogleSignIn.getClient(this, gso)
+        client.signOut().addOnCompleteListener { startActivityForResult(client.signInIntent, 9001) }
+    }
+
+    private fun sendToJs(tok: String?, err: String?) {
+        val a = if (tok == null) "null" else "'" + tok + "'"
+        val b = if (err == null) "null" else "'" + err + "'"
+        web.evaluateJavascript("window.onNativeGoogleToken && window.onNativeGoogleToken(" + a + "," + b + ")", null)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != 9001) return
+        try {
+            val acc = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
+            sendToJs(acc.idToken, null)
+        } catch (e: ApiException) {
+            sendToJs(null, if (e.statusCode == 12501) "cancel" else "code " + e.statusCode)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
