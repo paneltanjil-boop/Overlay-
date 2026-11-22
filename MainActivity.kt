@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.webkit.WebViewAssetLoader
+import com.onesignal.Continue
+import com.onesignal.OneSignal
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
@@ -55,7 +57,8 @@ class MainActivity : Activity() {
         }
         web.addJavascriptInterface(OverlayBridge(this), "EtourOverlay")
 
-        if (Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+        // পুশ নোটিফিকেশন (OneSignal): পারমিশন চাইবে
+        try { OneSignal.Notifications.requestPermission(true, Continue.none()) } catch (_: Exception) {}
 
         if (savedInstanceState == null) web.loadUrl("https://appassets.androidplatform.net/assets/index.html")
         else web.restoreState(savedInstanceState)

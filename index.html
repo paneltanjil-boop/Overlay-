@@ -1841,10 +1841,11 @@ details.mk-note-sm[open] summary{margin-bottom:6px}
 .mk-own-badge{margin-top:12px;padding:11px 12px;border-radius:12px;background:#eef2ff;border:1px dashed #a5b4fc;color:#4338ca;font-size:12.5px;font-weight:800;text-align:center;line-height:1.5}
 .rdot{position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:#ef4444;border:2px solid #fff;pointer-events:none;z-index:6;animation:rdotPulse 1.6s infinite}
 @keyframes rdotPulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}70%{box-shadow:0 0 0 7px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
-.qchip,.quick-action-card{position:relative}
+.qchip,.quick-action-card,.tab-icon-box,.etour-global-topbar .tb-icon{position:relative}
 .qchip>.rdot{top:0;right:6px}
 .quick-action-card>.rdot{top:9px;right:9px}
 .fab-telegram>.rdot{top:-2px;right:-2px}
+.etour-global-topbar .tb-icon>.rdot{top:-3px;right:-3px}
 .mk-top{position:sticky;top:0;z-index:30;display:flex;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;background:linear-gradient(135deg,#1e1b4b,#4338ca);box-shadow:0 4px 14px rgba(30,27,75,.25)}
 .mk-mode{position:relative;flex:1;border:0;border-radius:999px;padding:8px 10px;min-height:34px;font-family:inherit;font-size:12.5px;font-weight:800;color:#e0e7ff;background:rgba(255,255,255,.14);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,color .2s,transform .15s}
 .mk-mode.active{background:#fff;color:#4338ca;box-shadow:0 3px 10px rgba(0,0,0,.18)}
@@ -2431,9 +2432,6 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
                 <div class="am-title">ট্রানজেকশন আইডি দিন</div>
                 <input type="text" id="trx-bkash" class="am-input" placeholder="Transaction ID লিখুন" autocomplete="off" autocapitalize="characters">
                 <button type="button" class="v6-paste click-btn" onclick="window.pasteInto('trx-bkash')"><i class="fas fa-paste"></i> SMS থেকে পেস্ট করুন</button>
-                <button type="button" class="am-copy-btn am-read-rules-btn click-btn" onclick="window.readPaymentRules('bkash')" style="margin:0 0 12px;padding:11px 14px;width:100%;justify-content:center;background:rgba(255,255,255,.22);">
-                    <i class="fas fa-volume-up"></i> বিকাশের নিয়ম শুনুন
-                </button>
                 <div class="am-instruction-note">
                     <strong>১.</strong> bKash অ্যাপ খুলুন অথবা *247# ডায়াল করুন।<br>
                     <strong>২.</strong> <strong>Send Money</strong> নির্বাচন করুন।<br>
@@ -2453,9 +2451,6 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
                 <div class="am-title">ট্রানজেকশন আইডি দিন</div>
                 <input type="text" id="trx-rocket" class="am-input" placeholder="Transaction ID লিখুন" autocomplete="off" autocapitalize="characters">
                 <button type="button" class="v6-paste click-btn" onclick="window.pasteInto('trx-rocket')"><i class="fas fa-paste"></i> SMS থেকে পেস্ট করুন</button>
-                <button type="button" class="am-copy-btn am-read-rules-btn click-btn" onclick="window.readPaymentRules('rocket')" style="margin:0 0 12px;padding:11px 14px;width:100%;justify-content:center;background:rgba(255,255,255,.22);">
-                    <i class="fas fa-volume-up"></i> রকেটের নিয়ম শুনুন
-                </button>
                 <div class="am-instruction-note"><strong>১.</strong> Rocket অ্যাপ খুলুন অথবা *322# ডায়াল করুন।<br><strong>২.</strong> Send Money নির্বাচন করুন।<br><strong>৩.</strong> নিচের Rocket নম্বরে টাকা পাঠান।<br><strong>৪.</strong> SMS থেকে Transaction ID নিয়ে VERIFY করুন।</div>
                 <div style="font-size:13px;font-weight:800;margin-top:12px;">প্রাপক Rocket নম্বর (এই নম্বরেই Send Money করবেন):</div>
                 <div class="am-num-row">
@@ -2468,9 +2463,6 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
                 <div class="am-title">ট্রানজেকশন আইডি দিন</div>
                 <input type="text" id="trx-nagad" class="am-input" placeholder="Transaction ID লিখুন" autocomplete="off" autocapitalize="characters">
                 <button type="button" class="v6-paste click-btn" onclick="window.pasteInto('trx-nagad')"><i class="fas fa-paste"></i> SMS থেকে পেস্ট করুন</button>
-                <button type="button" class="am-copy-btn am-read-rules-btn click-btn" onclick="window.readPaymentRules('nagad')" style="margin:0 0 12px;padding:11px 14px;width:100%;justify-content:center;background:rgba(255,255,255,.22);">
-                    <i class="fas fa-volume-up"></i> নগদের নিয়ম শুনুন
-                </button>
                 <div class="am-instruction-note">
                     <strong>১.</strong> Nagad অ্যাপ খুলুন অথবা *167# ডায়াল করুন।<br>
                     <strong>২.</strong> <strong>Send Money</strong> নির্বাচন করুন।<br>
@@ -4374,7 +4366,6 @@ if(target) target.classList.add('active');
                 document.getElementById('deposit-available-wallet').innerText = depositBal;
             } else if(t === 'add-money') {
                 // Speech starts from the user's Add Money tap; the on-screen buttons remain available.
-                setTimeout(() => { try { readPaymentRules(currentPayMethod || 'bkash'); } catch (_) {} }, 180);
             } else if(t === 'withdraw' && currentUser) {
                 document.getElementById('withdraw-available').innerText = winningBal;
             } else if(t === 'history') loadHistory();
@@ -5838,7 +5829,6 @@ if(target) target.classList.add('active');
         if(t === 'rocket') btn.style.background = 'linear-gradient(135deg, #8C3494, #6a2670)';
         if(t === 'nagad') btn.style.background = 'linear-gradient(135deg, #F7941D, #c97612)';
         // Read the selected provider's own steps after the tab is tapped.
-        setTimeout(() => { try { readPaymentRules(t); } catch (_) {} }, 80);
     }
 
     function triggerVerify() { verifyAutoPay(currentPayMethod); }
@@ -6142,6 +6132,9 @@ if(target) target.classList.add('active');
         ov.innerHTML = '<div class="rf-box"><button type="button" class="rf-x" aria-label="Close"><i class="fas fa-times"></i></button><div class="rf-title"><i class="fas fa-key" style="color:#f59e0b"></i> Room ID &amp; Password</div><div id="rf-body"></div></div>';
         document.body.appendChild(fab);
         document.body.appendChild(ov);
+        // The floating key shortcut is intentionally disabled; room credentials remain available inside match pages.
+        fab.remove(); ov.remove();
+        st.textContent += '#room-fab,#rf-overlay{display:none!important}';
 
         function rfFloatBtn(){
             return window.EtourOverlay ? '<button type="button" class="rf-both" style="background:linear-gradient(135deg,#f59e0b,#ef4444);margin-bottom:10px" onclick="window.etourFloat()">🎮 গেমের ওপরে ভাসাও</button>' : '';
@@ -7004,12 +6997,17 @@ if(target) target.classList.add('active');
         let pops={},room='home',visit={},showing=false,tries=0;
         function curRoom(){const a=document.querySelector('.app-section.active');return (a&&ROOM_BY_SECTION[a.id])||room;}
         function vals(o){return Array.isArray(o)?o.filter(Boolean):Object.values(o||{}).filter(Boolean);}
+        window.etourPopupAction=function(target,link){
+            const allowed=['home','marketplace','mymatches','result','wallet','profile','add-money','withdraw','history','notifications','edit-profile','leaderboard','rules','support','video-earn'];
+            if(target){if(!allowed.includes(String(target)))return; if(['home','marketplace','mymatches','result','wallet','profile'].includes(target))window.showTab(target);else window.navigateSub(target);return;}
+            if(link)window.openSafeLink?window.openSafeLink(link):openSafeLink(link);
+        };
         function html(p){
             return vals(p.blocks).map(b=>{
                 if(b.type==='heading')return `<h3 class="ep-h">${esc(b.value)}</h3>`;
                 if(b.type==='text')return `<p class="ep-t">${esc(b.value).replace(/\n/g,'<br>')}</p>`;
                 if(b.type==='image'){const u=safeImg(b.value);return u?`<img class="ep-i" src="${u}" alt="">`:'';}
-                if(b.type==='button'&&b.link)return `<button type="button" class="ep-b" onclick="openSafeLink(${jsArg(b.link)})">${esc(b.value||'Open')}</button>`;
+                if(b.type==='button'&&(b.link||b.target))return `<button type="button" class="ep-b" onclick="window.etourPopupAction(${jsArg(b.target||'')},${jsArg(b.link||'')})">${esc(b.value||'Open')}</button>`;
                 return '';
             }).join('');
         }
@@ -7068,9 +7066,9 @@ if(target) target.classList.add('active');
         const MAP = {
             marketsell: ['#mk-btn-sell'],
             market:  ['#nav-marketplace .tab-icon-box', '.qchip[onclick*="id-marketplace"]', '.quick-action-card[onclick*="id-marketplace"]'],
-            support: ['.fab-telegram', '.qchip[onclick*="navigateSub(\'support\')"]', '.quick-action-card[onclick*="navigateSub(\'support\')"]', '#nav-profile .tab-icon-box'],
+            support: ['.fab-telegram', '.qchip[onclick*="navigateSub(\'support\')"]', '.quick-action-card[onclick*="navigateSub(\'support\')"]'],
             wallet:  ['#nav-wallet .tab-icon-box'],
-            notif:   ['#nav-profile .tab-icon-box']
+            notif:   ['.etour-global-topbar .tb-icon[aria-label="Notifications"]']
         };
         const VIEW = { market: 'tab-marketplace-view', support: 'support-view', wallet: 'wallet-view' };
         let uidKey = 'guest', active = new Set(), live = new Set(), lastSup = {};
@@ -7273,40 +7271,8 @@ window.pfSwitch=function(t){
         softButtonSound();
     }, true);
 
-    const paymentGuides = {
-        bkash: 'বিকাশ দিয়ে অ্যাড মানি করার নিয়ম। প্রথমে বিকাশ অ্যাপ খুলুন অথবা *247# ডায়াল করুন। Send Money নির্বাচন করুন। অ্যাপে দেখানো প্রাপকের বিকাশ নম্বরটি ভালোভাবে মিলিয়ে নিন। এরপর অ্যাপে নির্ধারিত পরিমাণ লিখে লেনদেন সম্পন্ন করুন। আপনার বিকাশ পিন কাউকে বলবেন না এবং এই অ্যাপেও লিখবেন না। লেনদেনের এসএমএস থেকে Transaction ID কপি করে এখানে Transaction ID ঘরে পেস্ট করুন। তারপর Verify চাপুন।',
-        rocket: 'রকেট দিয়ে অ্যাড মানি করার নিয়ম। প্রথমে Rocket অ্যাপ খুলুন অথবা *322# ডায়াল করুন। Send Money নির্বাচন করুন। অ্যাপে দেখানো প্রাপকের রকেট নম্বরটি ভালোভাবে মিলিয়ে নিন। এরপর অ্যাপে নির্ধারিত পরিমাণ লিখে লেনদেন সম্পন্ন করুন। আপনার পিন কাউকে বলবেন না এবং এই অ্যাপেও লিখবেন না। লেনদেনের এসএমএস থেকে Transaction ID কপি করে এখানে Transaction ID ঘরে পেস্ট করুন। তারপর Verify চাপুন।',
-        nagad: 'নগদ দিয়ে অ্যাড মানি করার নিয়ম। প্রথমে Nagad অ্যাপ খুলুন অথবা *167# ডায়াল করুন। Send Money নির্বাচন করুন। অ্যাপে দেখানো প্রাপকের নগদ নম্বরটি ভালোভাবে মিলিয়ে নিন। এরপর অ্যাপে নির্ধারিত পরিমাণ লিখে লেনদেন সম্পন্ন করুন। আপনার নগদ পিন কাউকে বলবেন না এবং এই অ্যাপেও লিখবেন না। লেনদেনের এসএমএস থেকে Transaction ID কপি করে এখানে Transaction ID ঘরে পেস্ট করুন। তারপর Verify চাপুন।'
-    };
+    // Payment instructions remain visible as text; payment text-to-speech has been removed.
 
-    window.readPaymentRules = function (method) {
-        const guide = paymentGuides[method];
-        if (!guide) return;
-        if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-            if (window.Swal) Swal.fire({
-                icon: 'info',
-                title: 'ভয়েস সুবিধা পাওয়া যাচ্ছে না',
-                text: 'আপনার ব্রাউজারে বাংলা Text-to-Speech চালু নেই। স্ক্রিনে দেওয়া নিয়মগুলো পড়ে অনুসরণ করুন।'
-            });
-            return;
-        }
-        try {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(guide);
-            utterance.lang = 'bn-BD';
-            utterance.rate = 0.88;
-            utterance.pitch = 1.04;
-            utterance.volume = 0.9;
-            const voices = window.speechSynthesis.getVoices();
-            const banglaVoice = voices.find(v => /^bn(-|_)/i.test(v.lang));
-            if (banglaVoice) utterance.voice = banglaVoice;
-            window.speechSynthesis.speak(utterance);
-        } catch (_) {}
-    };
-
-    window.stopPaymentRules = function () {
-        try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (_) {}
-    };
 })();
 </script>
 
@@ -7399,7 +7365,22 @@ window.pfSwitch=function(t){
   }
   function markVisited(k){
     if(!k)return;
-    currentKey=k;setUnread(k,false);
+    currentKey=k;
+    setUnread(k,false);
+    // Clear the matching persistent notification dot only after its page is opened.
+    try{
+      if(window.etourDots){
+        var dotKey={marketplace:'market',support:'support',wallet:'wallet',notifications:'notif'}[k];
+        if(dotKey)window.etourDots.clear(dotKey);
+        if(k==='marketplace' && window.etourDots.clear)window.etourDots.clear('marketsell');
+      }
+      if(k==='notifications'){
+        var badge=document.getElementById('menu-notif-badge');
+        if(badge){badge.textContent='0';badge.style.display='none';}
+        var topDot=document.getElementById('tb-dot');
+        if(topDot)topDot.classList.remove('show');
+      }
+    }catch(e){}
   }
   function onSectionMutation(el){
     var k=pageKey(el);
@@ -7448,7 +7429,10 @@ window.pfSwitch=function(t){
       var map={home:'home',marketplace:'marketplace',mymatches:'mymatches',result:'result',profile:'profile',wallet:'wallet',
         'add-money':'wallet',withdraw:'wallet',history:'history',notifications:'notifications',leaderboard:'leaderboard',
         rules:'rules',support:'support','video-earn':'video-earn','id-marketplace':'marketplace'};
-      markVisited(map[k]||k);
+      var targetKey=map[k]||k;
+      markVisited(targetKey);
+      setTimeout(detectVisited,120);
+      setTimeout(detectVisited,450);
     }
   },true);
   window.addEventListener('hashchange',function(){setTimeout(detectVisited,80);});
@@ -7456,6 +7440,21 @@ window.pfSwitch=function(t){
   document.addEventListener('DOMContentLoaded',function(){
     setTimeout(function(){attach();detectVisited();},1800);
     setTimeout(function(){attach();},4500);
+    // Watch actual active-page changes; this also catches popup/direct buttons
+    // whose navigation is performed by JavaScript rather than inline onclick.
+    if(window.MutationObserver){
+      var routeObserver=new MutationObserver(function(records){
+        var changed=false;
+        records.forEach(function(r){
+          if(r.type==='attributes' && r.attributeName==='class'){
+            var n=r.target;
+            if(n && n.classList && n.classList.contains('app-section'))changed=true;
+          }
+        });
+        if(changed)setTimeout(detectVisited,80);
+      });
+      routeObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+    }
   });
   // If this script is loaded after DOMContentLoaded, initialize immediately.
   if(document.readyState!=='loading')setTimeout(function(){attach();detectVisited();},1200);
