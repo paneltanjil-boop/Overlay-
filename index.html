@@ -4090,16 +4090,25 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
             const userRef = ref(db, 'users/' + user.uid);
             const snapshot = await get(userRef);
 
-            if (!snapshot.exists()) {
-                await set(userRef, {
-                    username: user.displayName || 'Google User',
-                    email: user.email,
-                    phone: '',
-                    deposit: 0,
-                    winning: 0,
-                    createdAt: serverTimestamp()
-                });
+            // সব দরকারি তথ্য (email, নাম ইত্যাদি) নিশ্চিত করি, যাতে অ্যাডমিন অ্যাপে ইমেইল দেখা যায়
+            const cur = snapshot.val() || {};
+            // Google account details are always synchronized to the user record.
+            // This prevents blank/'undefined' email values in the admin dashboard.
+            const googleEmail = String(user.email || '').trim();
+            const fix = { loginMethod: 'google', uid: user.uid };
+            if (googleEmail) {
+                fix.email = googleEmail;
+                fix.googleEmail = googleEmail;
+            }
+            if (!cur.username) fix.username = user.displayName || (googleEmail || '').split('@')[0] || 'Google User';
+            if (cur.phone === undefined) fix.phone = '';
+            if (cur.deposit === undefined) fix.deposit = 0;
+            if (cur.winning === undefined) fix.winning = 0;
+            if (!cur.createdAt) fix.createdAt = serverTimestamp();
+            await update(userRef, fix);
 
+            const statsSnap = await get(ref(db, 'player_stats/' + user.uid));
+            if (!statsSnap.exists()) {
                 await set(ref(db, 'player_stats/' + user.uid), {
                     tournaments: 0,
                     matches: 0,
@@ -4113,18 +4122,57 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
             }
 
             toggleLoader(false);
-            Swal.fire({
-                icon: 'success',
-                title: 'Logged In Successfully!',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            // The auth-state handler asks for a missing phone exactly once,
+            // before opening the app. Avoid opening a competing popup here.
+            const afterData = (await get(userRef)).val() || {};
+            if (/^01[3-9]\d{8}$/.test(String(afterData.phone || '').trim())) {
+                Swal.fire({ icon: 'success', title: 'Logged In Successfully!', timer: 1500, showConfirmButton: false });
+            }
         } catch (error) {
             toggleLoader(false);
             if(error && (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request')) return;
             Swal.fire({icon:'error', title:'Google লগইন হয়নি', text: authErrorMsg(error)});
         }
     }
+
+    // Google login users must provide a valid Bangladesh mobile number before entering the app.
+    let phoneAsking = false;
+    window.askPhoneIfMissing = async function(forceUid) {
+        if (phoneAsking) return false;
+        const uid = forceUid || (currentUser && currentUser.uid);
+        if (!uid) return false;
+        phoneAsking = true;
+        try {
+            while (auth.currentUser && auth.currentUser.uid === uid) {
+                const userRef = ref(db, 'users/' + uid);
+                const d = (await get(userRef)).val() || {};
+                if (d.banned === true) return false;
+                if (/^01[3-9]\d{8}$/.test(String(d.phone || '').trim())) return true;
+                const r = await Swal.fire({
+                    title: 'মোবাইল নম্বর দিন',
+                    html: '<div style="font-size:13px;margin-bottom:6px">যোগাযোগ ও পেমেন্টের জন্য আপনার মোবাইল নম্বর বাধ্যতামূলক।</div>',
+                    input: 'tel',
+                    inputPlaceholder: '01XXXXXXXXX',
+                    inputAttributes: { maxlength: 11, inputmode: 'numeric', autocomplete: 'tel' },
+                    confirmButtonText: 'নম্বর সেভ করুন',
+                    showCancelButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    inputValidator: v => /^01[3-9]\d{8}$/.test((v || '').trim()) ? null : 'সঠিক ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর দিন (যেমন 01712345678)'
+                });
+                if (!r.isConfirmed) continue;
+                await update(userRef, { phone: String(r.value).trim(), email: auth.currentUser.email || d.email || '', googleEmail: auth.currentUser.email || d.googleEmail || '', loginMethod: 'google', uid });
+                v6Toast('success', 'মোবাইল নম্বর সেভ হয়েছে ✅', 1800);
+                return true;
+            }
+        } catch (e) {
+            console.warn('mandatory phone prompt failed', e);
+            Swal.fire({ icon: 'error', title: 'নম্বর সেভ হয়নি', text: 'ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।' });
+        } finally {
+            phoneAsking = false;
+        }
+        return false;
+    };
 
     async function emailRegister() {
         const n = document.getElementById('reg-username').value.trim();
@@ -4212,6 +4260,23 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
                             email: u.email || '', phone: '', deposit: 0, winning: 0, createdAt: Date.now()
                         } : undefined);
                     } catch(e2) { console.warn('user record create failed', e2); }
+                } else {
+                    // আগের ইউজারের ইমেইল/নাম খালি থাকলে এখন ভরে দিই (অ্যাডমিন অ্যাপে "undefined" দেখানো বন্ধ)
+                    const heal = {};
+                    const isGoogleLogin = (u.providerData || []).some(p => p.providerId === 'google.com') || banData.loginMethod === 'google';
+                    if(u.email && (isGoogleLogin || !banData.email || banData.email === 'undefined' || banData.email === 'null')) heal.email = u.email;
+                    if(isGoogleLogin && u.email) heal.googleEmail = u.email;
+                    if(isGoogleLogin) heal.loginMethod = 'google';
+                    if(!banData.username && (u.displayName || u.email)) heal.username = u.displayName || u.email.split('@')[0];
+                    if(Object.keys(heal).length) { try { await update(ref(db, 'users/' + u.uid), heal); } catch(e3) { console.warn('profile heal failed', e3); } }
+                }
+                const latestUserSnap = await get(ref(db, 'users/' + u.uid));
+                const latestUserData = latestUserSnap.val() || {};
+                const isGoogleLogin = (u.providerData || []).some(p => p.providerId === 'google.com') || latestUserData.loginMethod === 'google';
+                if(isGoogleLogin) {
+                    // Do not show the player app until the required phone number is saved.
+                    const phoneSaved = await window.askPhoneIfMissing(u.uid);
+                    if(!phoneSaved) return;
                 }
             } catch(checkError) {
                 console.error('Ban status check failed:', checkError);
