@@ -14,7 +14,7 @@ jobs:
       - name: Arrange files
         run: |
           mkdir -p app/src/main/java/com/etour/app app/src/main/assets
-          mv MainActivity.kt OverlayService.kt OverlayBridge.kt app/src/main/java/com/etour/app/
+          mv MainActivity.kt OverlayService.kt OverlayBridge.kt EtourApp.kt app/src/main/java/com/etour/app/
           mv index.html app/src/main/assets/
           mv AndroidManifest.xml app/src/main/
           mv app-build.gradle app/build.gradle
