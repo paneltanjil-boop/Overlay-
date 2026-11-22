@@ -6010,7 +6010,8 @@ if(target) target.classList.add('active');
             return;
         }
         let ok = false;
-        try { await navigator.clipboard.writeText(text); ok = true; }
+        try { if(window.EtourOverlay && typeof window.EtourOverlay.copyText === 'function' && window.EtourOverlay.copyText(String(text))) ok = true; } catch(_) {}
+        if(!ok) try { await navigator.clipboard.writeText(text); ok = true; }
         catch(e) {
             try {
                 const ta = document.createElement('textarea');
@@ -6057,6 +6058,7 @@ if(target) target.classList.add('active');
         Swal.mixin({ toast:true, position:'top', showConfirmButton:false, timer: timer || 1600, timerProgressBar:true, customClass:{container:'swal2-top'} }).fire({ icon, title });
     }
     async function copyTextRaw(text) {
+        try { if(window.EtourOverlay && typeof window.EtourOverlay.copyText === 'function' && window.EtourOverlay.copyText(String(text))) return true; } catch(_) {}
         try { await navigator.clipboard.writeText(text); return true; } catch(e) {}
         try {
             const ta = document.createElement('textarea');
@@ -6087,7 +6089,7 @@ if(target) target.classList.add('active');
         const el = document.getElementById(id);
         if(!el) return;
         let raw = '';
-        try { raw = (await navigator.clipboard.readText()) || ''; }
+        try { raw = (window.EtourOverlay && typeof window.EtourOverlay.readClipboard === 'function') ? String(window.EtourOverlay.readClipboard() || '') : ((await navigator.clipboard.readText()) || ''); }
         catch(e) { return v6Toast('info', 'ঘরে ট্যাপ করে ধরে রেখে "Paste" চাপুন', 2800); }
         let v = '';
         const kw = raw.match(/(?:TrxID|TxnID|Txn\s*ID|Trx\s*ID|Transaction\s*ID)\s*[:\-]?\s*([A-Za-z0-9]{6,24})/i);

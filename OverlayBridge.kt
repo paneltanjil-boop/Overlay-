@@ -38,5 +38,23 @@ class OverlayBridge(private val ctx: Context) {
     }
 
     @JavascriptInterface
+    fun readClipboard(): String {
+        return try {
+            val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = cm.primaryClip
+            if (clip != null && clip.itemCount > 0) clip.getItemAt(0).coerceToText(ctx).toString() else ""
+        } catch (e: Exception) { "" }
+    }
+
+    @JavascriptInterface
+    fun copyText(text: String): Boolean {
+        return try {
+            val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            cm.setPrimaryClip(android.content.ClipData.newPlainText("etour", text))
+            true
+        } catch (e: Exception) { false }
+    }
+
+    @JavascriptInterface
     fun hide() { ctx.stopService(Intent(ctx, OverlayService::class.java)) }
 }

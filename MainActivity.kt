@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.ApiException
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
+    private var filePathCb: ValueCallback<Array<android.net.Uri>>? = null
     private val webClientId = "162957967049-dsn3n0pprcmfp84v33qfvbe70889730e.apps.googleusercontent.com"
 
     // নেটিভ Google লগইন (WebView তে Google পপআপ লগইন কাজ করে না)
@@ -32,6 +33,11 @@ class MainActivity : Activity() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 9002) {
+            filePathCb?.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data))
+            filePathCb = null
+            return
+        }
         if (requestCode != 9001) return
         try {
             val acc = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
@@ -70,6 +76,14 @@ class MainActivity : Activity() {
         }
         // window.open() লিংক বাইরের ব্রাউজারে খুলবে
         web.webChromeClient = object : WebChromeClient() {
+            // ছবি/ফাইল আপলোড (প্রোফাইল ছবি, স্ক্রিনশট ইত্যাদি)
+            override fun onShowFileChooser(v: WebView, cb: ValueCallback<Array<android.net.Uri>>, params: FileChooserParams): Boolean {
+                filePathCb?.onReceiveValue(null)
+                filePathCb = cb
+                return try {
+                    startActivityForResult(params.createIntent(), 9002); true
+                } catch (e: Exception) { filePathCb = null; false }
+            }
             override fun onCreateWindow(v: WebView, isDialog: Boolean, isUserGesture: Boolean, msg: android.os.Message): Boolean {
                 val t = WebView(this@MainActivity)
                 t.webViewClient = object : WebViewClient() {
