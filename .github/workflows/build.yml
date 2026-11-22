@@ -17,7 +17,7 @@ jobs:
           mv MainActivity.kt OverlayService.kt OverlayBridge.kt EtourApp.kt app/src/main/java/com/etour/app/
           mv index.html app/src/main/assets/
           mv AndroidManifest.xml app/src/main/
-          mv ap-build.gradle app/build.gradle
+          mv app-build.gradle app/build.gradle
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
@@ -26,4 +26,3 @@ jobs:
         with:
           name: ETOUR-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-          
