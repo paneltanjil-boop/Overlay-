@@ -4228,6 +4228,9 @@ body.etour-night .am-card span,body.etour-night .method-card span{color:var(--te
     onAuthStateChanged(auth, async u => {
         hideSplash();
         clearUserListeners();
+        // পুশ নোটিফিকেশন: OneSignal-এ ইউজারের UID বসিয়ে দিই (এই UID ধরেই পুশ যায়)
+        try { if(window.EtourOverlay) { if(u && EtourOverlay.setExternalId) EtourOverlay.setExternalId(u.uid); else if(!u && EtourOverlay.clearExternalId) EtourOverlay.clearExternalId(); } } catch(e) {}
+        try { window.OneSignal = window.OneSignal || []; window.OneSignal.push(function(){ try { if(u) window.OneSignal.login(u.uid); else window.OneSignal.logout(); } catch(e) {} }); } catch(e) {}
         try { if(typeof window.startDotWatchers === 'function') window.startDotWatchers(u ? u.uid : null); } catch(e) { console.warn(e); }
         try { if(typeof window.startMarketplaceRealtime === 'function') window.startMarketplaceRealtime(u ? u.uid : null); } catch(e) { console.warn(e); }
         // লগইন/পাসওয়ার্ড রিসেটের আগের কোনো পপআপ যেন অ্যাপের ভেতরে ভেসে না ওঠে
@@ -5967,6 +5970,13 @@ if(target) target.classList.add('active');
                 txID: trxId, date: new Date().toLocaleString()
             });
         } catch(e) { console.warn('Deposit history save failed', e); }
+        try {
+            await push(ref(db, `notifications/${currentUser.uid}`), {
+                title: '💰 ডিপোজিট সফল',
+                body: `আপনার ৳${credited} ডিপোজিট ওয়ালেটে যোগ হয়েছে।`,
+                type: 'deposit_success', time: new Date().toLocaleString(), read: false
+            });
+        } catch(e) { console.warn('Deposit notification failed', e); }
 
         Swal.fire({ icon:'success', title:'টাকা যোগ হয়েছে!', text:`৳${credited} আপনার Deposit ওয়ালেটে যোগ হয়েছে।` })
             .then(() => { input.value = ""; returnToWallet(); });

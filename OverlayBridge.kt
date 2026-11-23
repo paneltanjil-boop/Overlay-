@@ -56,5 +56,15 @@ class OverlayBridge(private val ctx: Context) {
     }
 
     @JavascriptInterface
+    fun setExternalId(uid: String) {
+        try { com.onesignal.OneSignal.login(uid) } catch (e: Exception) {}
+    }
+
+    @JavascriptInterface
+    fun clearExternalId() {
+        try { com.onesignal.OneSignal.logout() } catch (e: Exception) {}
+    }
+
+    @JavascriptInterface
     fun hide() { ctx.stopService(Intent(ctx, OverlayService::class.java)) }
 }
